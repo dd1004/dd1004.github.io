@@ -120,6 +120,7 @@
 
         const getData = async () => {
             let response = await getFHIRResource("Practitioner");
+            console.log(response);
             let datas = response.success ? response.data : [];
             if (Array.isArray(response.data)){
                 datas.sort((a, b) => {
