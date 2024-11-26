@@ -108,7 +108,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const login = checkLogin();
             let mytoekn =   getQueryString()["token"];
-            //let mytoekn = localStorage.getItem('token');
+            localStorage.setItem('token',mytoekn);
        
             alert(mytoekn);
             if (login && person) {
