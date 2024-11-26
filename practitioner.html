@@ -106,8 +106,9 @@
     <script>
         const person = getPerson();
         document.addEventListener('DOMContentLoaded', () => {
-            const login = true; //checkLogin();
-            let mytoekn = localStorage.getItem('token');
+            const login = checkLogin();
+            let mytoekn =   window.location.querystring["token"]?
+            //let mytoekn = localStorage.getItem('token');
        
             alert(mytoekn);
             if (login && person) {
