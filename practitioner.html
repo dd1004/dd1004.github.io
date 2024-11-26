@@ -107,7 +107,7 @@
         const person = getPerson();
         document.addEventListener('DOMContentLoaded', () => {
             const login = checkLogin();
-            let mytoekn =   window.location.querystring["token"];
+            let mytoekn =   getQueryString("token");
             //let mytoekn = localStorage.getItem('token');
        
             alert(mytoekn);
@@ -116,6 +116,16 @@
                 getData();
             }
         });
+
+        const getQueryString= () => {
+            var result = {}, queryString = location.search.slice(1),
+            re = /([^&=]+)=([^&]*)/g, m;
+            while (m = re.exec(queryString)) {
+                result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return result;
+        }
+
 
         const setPerson = () => {
             document.getElementById('docker-name').innerText = person.name;
