@@ -166,7 +166,7 @@
                 getData();
             }else{
                 let response = await getFHIRResource("Observation?code="+querycondition);
-           
+                console.log(response);
                 if (Array.isArray(response.data)){
                    datas.sort((a, b) => {
                         return a.id - b.id;
