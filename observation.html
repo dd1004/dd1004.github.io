@@ -113,7 +113,7 @@
             let mytoekn =   getQueryString()["token"];
             if (mytoekn !=null){
                 localStorage.setItem('token',mytoekn);
-                alert(mytoekn);
+               // alert(mytoekn);
                 document.getElementById('docker-name').innerText = "Authorized";
                 document.getElementById('docker-id').innerText = "Authorized";
                 getData();
