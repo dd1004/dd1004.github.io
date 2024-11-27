@@ -167,12 +167,12 @@
             }else{
                 let response = await getFHIRResource("Observation?code="+querycondition);
                 console.log(response);
+                let datas =response.data ;
                 if (Array.isArray(response.data)){
                    datas.sort((a, b) => {
                         return a.id - b.id;
                    });
                 }
-                let datas =response.data ;
                 setData(datas);
             }
            
@@ -229,7 +229,7 @@
                     </tr>
                 `;
            }
-            alert(html);
+            //alert(html);
             tbody.innerHTML = html;
         }
 
