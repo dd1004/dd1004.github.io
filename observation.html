@@ -80,7 +80,25 @@
                 </li>
             </div>
         </div>
+        
+        <hr />
+        <div class="mt-15">
+            <div class="card">
+                <div class="flex justify-between">
 
+                    <div id="encounter-id" class="">
+                        <input id="query-id" type="text" class="form-control"
+                            placeholder="輸入code" style="width: 100%;" value="Camera">
+                    </div>
+                    <hr />  
+
+                    <div id="encounter-query" class=" ">
+                    <button class="btn-main" onclick="query();">查詢</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <hr/>
         <div class="container-main">
             <div class="flex">
                 <div>帳號：<span id="docker-name"></span></div>
@@ -140,6 +158,24 @@
         const setPerson = () => {
             document.getElementById('docker-name').innerText = person.name;
             document.getElementById('docker-id').innerText = person.id;
+        }
+
+        const query= async () => {
+            let querycondition = document.getElementById('query-id').value;
+            if (!querycondition) {
+                getData();
+            }else{
+                let response = await getFHIRResource("Observation?code="+querycondition);
+           
+                if (Array.isArray(response.data)){
+                   datas.sort((a, b) => {
+                        return a.id - b.id;
+                   });
+                }
+                let datas =response.data ;
+                setData(datas);
+            }
+           
         }
 
         const getData = async () => {
