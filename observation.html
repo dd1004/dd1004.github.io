@@ -59,14 +59,14 @@
         <div class="container-header">
             <div class="header-left">
                 
-                <div class="title">教案儲存管理-成員(Practitioner)</div>
+                <div class="title">教案儲存管理-觀察資訊(Observation)</div>
             </div>
             <div class="header-right">
                 <li>
                     <a href="/organization.html">組織(Organization)</a>
                 </li>
                 <li>
-                    <a href="/observation.html">觀察資訊(Observation)</a>
+                    <a href="/practitioner.html">成員(Practitioner)</a>
                 </li>
                 <li>
                     <a href="/encounter.html">課程(Encounter)</a>
@@ -93,8 +93,9 @@
                     <table class="table table-bordered" style="min-width: 700px;">
                         <thead>
                             <tr>
-                                <th>成員ID</th>
-                                <th>姓名</th>
+                                <th>記錄人員</th>
+                                <th>狀態</th>
+                                <th>結果</th>
                             </tr>
                         </thead>
                         <tbody id="tbody"></tbody>
@@ -109,13 +110,21 @@
     <script>
         const person = getPerson();
         document.addEventListener('DOMContentLoaded', () => {
-            const login = checkLogin();
-            
-       
-            if (login && person) {
-                setPerson();
+            let mytoekn =   getQueryString()["token"];
+            if (mytoekn !=null){
+                localStorage.setItem('token',mytoekn);
+                alert(mytoekn);
+                document.getElementById('docker-name').innerText = "Authorized";
+                document.getElementById('docker-id').innerText = "Authorized";
                 getData();
+            }else{
+                const login = checkLogin();
+                if (login && person) {
+                    setPerson();
+                    getData();
+                }
             }
+            
         });
 
         const getQueryString= () => {
@@ -134,7 +143,7 @@
         }
 
         const getData = async () => {
-            let response = await getFHIRResource("Practitioner");
+            let response = await getFHIRResource("Observation");
             //console.log(response.success); 2024/11/20 always return false on github.io
             //let datas = response.success ? response.data : [];
             let datas = response.data ;
@@ -168,8 +177,9 @@
                 let status = data.status;
                 html += `
                     <tr>
-                        <td>${data.resource.id}</td>
-                        <td>${data.resource.name[0].text}</td>
+                        <td>${data.resource.performer[0].reference}</td>
+                        <td>${data.resource.status}</td>
+                        <td>${data.resource.component[0].code.coding[0].display}</td>
                         
                     </tr>
                 `;
@@ -177,9 +187,9 @@
            }else{
             html += `
                     <tr>
-                        <td>${datas.resource.id}</td>
-                        <td>${datas.resource.name[0].text}</td>
-                        
+                        <td>${data.resource.performer[0].reference}</td>
+                        <td>${data.resource.status}</td>
+                        <td>${data.resource.component[0].code.coding[0].display}</td>
                     </tr>
                 `;
            }
