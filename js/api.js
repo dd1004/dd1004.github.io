@@ -1,5 +1,10 @@
 const FHIR_BASE = 'https://fhir.tcumi.com:52443/hapi66/fhir';
 const API_HOST = 'https://fhir.tcumi.com:52443/hapi66';
+const FHIR_BASE2 = 'https://fhir.tcumi.com:52443/hapi66/fhir';
+const API_HOST2 = 'https://fhir.tcumi.com:52443/hapi66';
+const FHIR_APP = 'https://dd1004.github.io/personentry.html'
+//const FHIR_BASE = 'http://localhost:8080/r5/fhir';
+//const API_HOST = 'http://localhost:8080/r5';
 const API_HEADERS = {
     'Content-Type': 'application/json',
     'Authorization' : ''
@@ -10,7 +15,7 @@ const API_UP_HEADERS = {
 
 
 let personJSONobj = {
-		"resourceType": "Person",
+		"resourceType": "Person",s
 		"active": "true",
 		"identifier": [ 
 			{
@@ -22,11 +27,11 @@ let personJSONobj = {
 				"value": ""
 			},
 			{
-				"system": "jobPosition",
+				"system": "entrypersonid",
 				"value": ""
 			},
 			{
-				"system": "institution",
+				"system": "entrypersonname",
 				"value": ""
 			},
 			{
@@ -49,9 +54,17 @@ let personJSONobj = {
     let practitionerJSONobj = {
 		"resourceType": "Practitioner",
 		"active": "true",
-		"identifier": [ 
+		"identifier": [
 			{
 				"system": "UserID",
+				"value": ""
+			},
+			{
+				"system": "Password",
+				"value": ""
+			},
+			{
+				"system": "role",
 				"value": ""
 			}
 		],
@@ -81,22 +94,53 @@ let personJSONobj = {
 
 	
     let  patientJSONobj = {
+        
 		"resourceType": "Patient",
 		"active": "true",
+        "identifier": [ 
+			{
+				"system": "UserID",
+				"value": ""
+			}, 
+			{
+				"system": "Password",
+				"value": ""
+			},
+			{
+				"system": "jobPosition",
+				"value": ""
+			},
+			{
+				"system": "institution",
+				"value": ""
+			},
+			{
+				"system": "nationality",
+				"value": ""
+			}
+		],
+		"gender": "",
+        "birthDate": "",
 		"name": [ {
 			"text": "testPatient1"
 		} ],
 		"managingOrganization": {
 			"reference": "Organization/98a6f5c5-af58-41b5-bd6f-d8ca996b5580"
 		},
+		"telecom": [
+			{
+			  "system": "email",
+			  "value": "Jim@example.org"
+			}
+		]
 	};
 
     let encounterJSONobj = {
 		"resourceType": "Encounter",
-		"status": "in-progress",
+		"status": "unknown",
 		"identifier": [ 
 			{
-				"system": "id",
+				"system": "type",
 				"value": ""
 			}, 
 			{
@@ -104,6 +148,11 @@ let personJSONobj = {
 				"value": ""
 			}
 		],
+        "participant":[
+            {"actor":{"reference":""}}
+        ],
+        "subject" : {"reference":""},
+        "actualPeriod" :{"start":""}
 
     };
     //documenet reference
@@ -124,7 +173,48 @@ let personJSONobj = {
         "context": [{
             "reference": ""
         }]
-    };
+    }; 
+    //https://build.fhir.org/ig/cctwFHIRterm/MOHW_TWCoreIG_Build/examples.html
+    //身高 8302-2 Body height, unit cm, code cm
+    //體重 29463-7 Body weight, unit kg, code kg
+    //體溫 8310-5 Body temperature, unit Cel, code Cel
+    //心率 8867-4 Heart rate, unit beats/min, code /min
+    let observationobj = {
+        "resourceType": "Observation",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ],
+            "text": "Vital Signs"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8480-6",
+              "display": "Systolic blood pressure"
+            }
+          ],
+          "text": "Systolic Blood Pressure"
+        },
+        "subject": {
+          "reference": "Patient/xxxx"
+        },
+        "effectiveDateTime": "2025-01-01",
+        "valueQuantity": {
+          "value": 120,
+          "unit": "mmHg",
+          "system": "http://unitsofmeasure.org",
+          "code": "mm[Hg]"
+        }
+      };
 	
 	
     const  fileGet = async (myfile) => {
@@ -166,6 +256,7 @@ const usePost = async (url, headers = {}, body = {}) => {
         headers: headers,
         body: body
     }).then(async (response) => {
+       
         json = await response.json();
     }).catch((error) => {
         console.log(error);
@@ -205,7 +296,15 @@ const getPractitionerByLink = async (link) => {
     };
 }
 
-
+const getPatientByLink = async (link) => {
+    const url = `${FHIR_BASE}/`+link;
+    API_HEADERS.Authorization = localStorage.getItem('token');
+    const response = await useGet(url, API_HEADERS);
+    return {
+        success: response ? response.id  : false,
+        data: response ? response.id ? response : null : null
+    };
+}
 
 
 const getPatientById = async (id) => {
@@ -221,6 +320,7 @@ const getPatientById = async (id) => {
 
 const getPatientByIdentifierAndBirth = async (identifier, birthdate) => {
     const url = `${FHIR_BASE}/Patient?identifier=${identifier}&birthdate=${birthdate}`;
+    API_HEADERS.Authorization = localStorage.getItem('token');
     const response = await useGet(url, API_HEADERS);
     let success = response ? response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
     let data = null;
@@ -239,6 +339,7 @@ const getPatientByIdentifierAndBirth = async (identifier, birthdate) => {
 
 const getEncounterDataById = async (id) => {
     const url = `${FHIR_BASE}/Encounter/${id}`;
+    API_HEADERS.Authorization = localStorage.getItem('token');
     const response = await useGet(url, API_HEADERS);
     const success = response ? true : false;
     return {
@@ -249,6 +350,7 @@ const getEncounterDataById = async (id) => {
 
 const getEncounterDataByPractitionerAndStatus = async (status, id) => {
     const url = `${FHIR_BASE}/Encounter?status=${status}&participant=${id}`;
+    API_HEADERS.Authorization = localStorage.getItem('token');
     const response = await useGet(url, API_HEADERS);
     const success = response ? true : false;
     let datas = [];
@@ -312,8 +414,39 @@ const getEncountersByPractitioner = async (id) => {
     };
 }
 
+const getPractitionerByEncounter = async (url) => {
+    // get doctor or nurse
+    const response = await getFHIRResourceById(url);
+    //const response = await getFHIRResource(url).then((response) => {
+        
+    //    return response.success ? response.data : [];
+    //});
+    
+    let datas =response.data ;
+     if (Array.isArray(response.data)){
+        datas.sort((a, b) => {
+            return a.id - b.id;
+        });
+    }
+
+    let datas1 =  "";
+    if (Array.isArray(datas)){
+        datas.forEach((data) => {
+            datas1 = data.name[0].text +"("+data.id+")";
+           
+        });
+    }else{
+        datas1 =  datas.name[0].text +"("+datas.id+")";
+   }
+    
+   
+
+    return datas1;
+}
+
 const getEncounterDataByPatientAndStatus = async (status, id) => {
     const url = `${FHIR_BASE}/Encounter?status=${status}&patient=${id}`;
+    API_HEADERS.Authorization = localStorage.getItem('token');
     const response = await useGet(url, API_HEADERS);
     const success = response ? true : false;
     let datas = [];
@@ -321,11 +454,15 @@ const getEncounterDataByPatientAndStatus = async (status, id) => {
         for (let i in response.entry) {
             let encounter = response.entry[i].resource;
             let patientId = encounter.subject.reference.split('/')[1];
+            let referenceurl = encounter.participant ? encounter.participant[0].actor.reference :"";
+            let bookdate = encounter.actualPeriod ?encounter.actualPeriod.start : "";
             datas.push({
                 id: encounter.id,
                 status: encounter.status,
+                reference: referenceurl,
                 patientId,
                 note: "",
+                book : bookdate,
             });
         }
     }
@@ -363,10 +500,13 @@ const getEncountersByPatient = async (id) => {
         let encounter = encounters[i];
         let response2 = await getPatientById(encounter.patientId);
         let patient = response2.success && response2.data ? response2.data : null;
+        console.log(encounter);
         datas.push({
+            book : encounter.book,
             id: encounter.id,
             status: encounter.status,
             name: patient ? patient.name[0].text : "查無此人",
+            reference : encounter.reference ,
             note: "",
         });
     }
@@ -391,6 +531,7 @@ const updateEncounterStatus = async (id, status) => {
     encounter.status = status;
 
     const url = `${FHIR_BASE}/Encounter/${id}`;
+    API_HEADERS.Authorization = localStorage.getItem('token');
     const response = await usePut(url, API_HEADERS, JSON.stringify(encounter));
     const success = response ? response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
     return {
@@ -408,13 +549,84 @@ const userlogin = async (id, identifier) => {
     const response = await usePost(url, API_HEADERS);
     //console.log(response.entry.length);
     //console.log(response.total);
-    return {
-        success: response ? response.total > 0 : false,
-        data: response ? response.entry.length > 0 ? response.entry[0] : null : null,
-        jwt: response.jwt
-    };
+    if (response.total == null){
+        return {
+            success : false,
+            data : null,
+            jwt : null
+        };
+    }else{
+        return {
+            success: response ? response.total > 0 : false,
+            data: response ? response.entry.length > 0 ? response.entry[0] : null : null,
+            jwt: response.jwt
+        };
+    }
 }
 
+
+const Patientlogin = async (id, identifier) => {
+    const url = `${API_HOST}/api/Patientlogin?username=${id}&password=${identifier}`;
+    const response = await usePost(url, API_HEADERS);
+    console.log(response);
+    //console.log(response.total);
+    if (null== response || response.total == null){
+        return {
+            success : false,
+            data : null,
+            jwt : null
+        };
+    }else{
+        return {
+            success: response ? response.total > 0 : false,
+            data: response ? response.entry.length > 0 ? response.entry[0] : null : null,
+            jwt: response.jwt
+        };
+    }
+    
+}
+
+const Personlogin = async (id, identifier) => {
+    const url = `${API_HOST}/api/Personlogin?username=${id}&password=${identifier}`;
+    const response = await usePost(url, API_HEADERS);
+    console.log(response);
+    //console.log(response.total);
+    if (null== response || response.total == null){
+        return {
+            success : false,
+            data : null,
+            jwt : null
+        };
+    }else{
+        return {
+            success: response ? response.total > 0 : false,
+            data: response ? response.entry.length > 0 ? response.entry[0] : null : null,
+            jwt: response.jwt
+        };
+    }
+    
+}
+
+const Practitionerlogin = async (id, identifier) => {
+    const url = `${API_HOST}/api/Practitionerlogin?username=${id}&password=${identifier}`;
+    const response = await usePost(url, API_HEADERS);
+    console.log(response);
+    //console.log(response.total);
+    if (response.total == null){
+        return {
+            success : false,
+            data : null,
+            jwt : null
+        };
+    }else{
+        return {
+            success: response ? response.total > 0 : false,
+            data: response ? response.entry.length > 0 ? response.entry[0] : null : null,
+            jwt: response.jwt
+        };
+    }
+    
+}
 const getPersonById = async (id) => {
     const url = `${FHIR_BASE}/Person/${id}`;
     API_HEADERS.Authorization = localStorage.getItem('token');
@@ -427,6 +639,97 @@ const getPersonById = async (id) => {
     };
 }
 
+const createPerson = async (data) => {
+    
+
+    const url = `${API_HOST}/api/registerPerson`;
+    const response = await usePost(url, API_HEADERS, JSON.stringify(data));
+    console.log(response);
+    if (response.data !=undefined){
+        return {
+            success: false,
+            msg: "註冊失敗" + response.msg,
+            data: response
+        };
+    }else{
+        const success = response ? response.data && response.data.length > 0 && response.data.code === "200" ? false : true : false;
+        return {
+            success: success,
+            msg: success ? "註冊成功" : "註策失敗",
+            data: response
+        };
+    }
+    
+}
+
+const createPatient = async (data) => {
+    
+
+    const url = `${API_HOST}/api/registerPatient`;
+    const response = await usePost(url, API_HEADERS, JSON.stringify(data));
+    console.log(response);
+    if (response.data !=undefined){
+        return {
+            success: false,
+            msg: "註冊失敗" + response.msg,
+            data: response
+        };
+    }else{
+        const success = response ? response.data && response.data.length > 0 && response.data.code === "200" ? false : true : false;
+        return {
+            success: success,
+            msg: success ? "註冊成功" : "註策失敗",
+            data: response
+        };
+    }
+    
+}
+
+const createFHIRPatient = async (data) => {
+    
+
+    const url = `${API_HOST2}/api/registerPatient`;
+    const response = await usePost(url, API_HEADERS, JSON.stringify(data));
+    console.log(response);
+    if (response.data !=undefined){
+        return {
+            success: false,
+            msg: "註冊失敗" + response.msg,
+            data: response
+        };
+    }else{
+        const success = response ? response.data && response.data.length > 0 && response.data.code === "200" ? false : true : false;
+        return {
+            success: success,
+            msg: success ? "註冊成功" : "註策失敗",
+            data: response
+        };
+    }
+    
+}
+
+const createPractitioner = async (data) => {
+    
+
+    const url = `${API_HOST}/api/regPractioner`;
+    const response = await usePost(url, API_HEADERS, JSON.stringify(data));
+    //console.log(response);
+    if (response.data !=undefined){
+        return {
+            success: false,
+            msg: "註冊失敗" + response.msg,
+            data: response
+        };
+    }else{
+        const success = response ? response.data && response.data.length > 0 && response.data.code === "200" ? false : true : false;
+        return {
+            success: success,
+            msg: success ? "註冊成功" : "註策失敗",
+            data: response
+        };
+    }
+    
+}
 
 const createPersonAndPractitioner = async (data) => {
     
@@ -456,7 +759,8 @@ const createFHIRResource = async (myresource, data) => {
     const url = `${FHIR_BASE}/${myresource}`;
     API_HEADERS.Authorization = localStorage.getItem('token');
     const response = await usePost(url, API_HEADERS, JSON.stringify(data));
-    const success = response ? response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
+
+    const success = response ? response.issue==undefined?false: response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
     return {
         success: success,
         msg: success ? "資料新增成功" : "資料新增失敗",
@@ -604,7 +908,27 @@ const getOrganizationByName = async (name) => {
     };
 }
 
+const getRemoteFHIRResourceById = async (resource) => {
+    const url = `${FHIR_BASE2}/`+resource;
+    API_HEADERS.Authorization = localStorage.getItem('token');
+    const response = await useGet(url, API_HEADERS);
+    const success = response ? response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
+    return {
+        success: success,
+        data: success ? response : null
+    };
+}
 
+const getFHIRResourceById = async (resource) => {
+    const url = `${FHIR_BASE}/`+resource;
+    API_HEADERS.Authorization = localStorage.getItem('token');
+    const response = await useGet(url, API_HEADERS);
+    const success = response ? response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
+    return {
+        success: success,
+        data: success ? response : null
+    };
+}
 const getFHIRResource = async (resource) => {
     const url = `${FHIR_BASE}/`+resource;
     API_HEADERS.Authorization = localStorage.getItem('token');

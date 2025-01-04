@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>睡眠系統</title>
+    <title>檢查報告</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/custom.css">
     <style>
@@ -33,9 +33,21 @@
                 <a href="/patient-login.html">
                     <img src="/img/logo.png" alt="logo" class="logo">
                 </a>
-                <div class="title">睡眠系統</div>
+                <div class="title">Patient PHR-Reports</div>
             </div>
             <div class="header-right">
+                <li>
+                    <a href="/patient-checkin.html">報到</a>
+                </li>
+                <li>
+                    <a href="/patient-observation.html">上傳監測資料</a>
+
+                </li>
+                <li>
+                    <a href="/patient-booking.html">掛號</a>
+
+                </li>
+
                 <li>
                     <span id="patient-name"></span>
                 </li>
@@ -96,17 +108,18 @@
     <script src="/js/api.js"></script>
     <script src="/js/common.js"></script>
     <script>
-        const patient = getPatient();
+        const patientMaster = getPatient();
         document.addEventListener('DOMContentLoaded', () => {
             const login = checkLogin();
-            if (login && patient) {
+            checkcreate();
+            if (login && patientMaster) {
                 setPatient();
             }
         });
 
         const setPatient = () => {
-            document.getElementById('patient-name').innerText = '您好，' + patient.name;
-            document.getElementById('input-patient-identifier').value = patient.identifier;
+            document.getElementById('patient-name').innerText = '您好，' + patientMaster.name;
+            document.getElementById('input-patient-identifier').value = patientMaster.identifier;
         }
 
         const search = async () => {
@@ -115,10 +128,11 @@
             const organizationName = document.querySelector('select').selectedOptions[0].innerText;
             const start = document.getElementById('start-date').value;
             const end = document.getElementById('end-date').value;
+            const birthDate = patientMaster.birthDate;
 
             let patient = null;
             if (identifier) {
-                let response = await getPatientByIdentifierAndBirth(identifier, '');
+                let response = await getPatientByIdentifierAndBirth(identifier, birthDate);
                 if (!response.success) {
                     alert("查無病患資料");
                     return;

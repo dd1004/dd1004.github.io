@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>睡眠系統</title>
+    <title>病患看診資料查詢</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/custom.css">
     <style>
@@ -26,41 +26,203 @@
 
 <body>
     <div class="container">
+        <div class="container-header">
+            <div class="header-left">
+                <a href="/patient-login.html">
+                    <img src="/img/logo.png" alt="logo" class="logo">
+                </a>
+                <div class="title">Patient System-Reports</div>
+            </div>
+            <div class="header-right">
+                <li>
+                    <a href="/patient-reports.html">檢查文件</a>
+                </li>
+                <li>
+                    <a href="/patient-observation.html">上傳監測資料</a>
+
+                </li>
+                <li>
+                    <a href="/patient-booking.html">掛號</a>
+
+                </li>
+
+                <li>
+                    <span id="patient-name"></span>
+                </li>
+                <li>
+                    <a href="javascript:logout();">登出</a>
+                </li>
+            </div>
+        </div>
         <div class="text-center">
             <img src="/img/logo.png" alt="logo" class="logo">
         </div>
         <h1 class="mt-20 text-center">病患看診報到</h1>
         <div class="card">
             <div class="input-group">
-                <span>身分證字號</span>
-                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="請輸入身分證字號"
-                    value="A122229890">
+                
+                    <span>email</span>
+                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="請輸入email" value="wenrong.hsiao@gmail.com">
             </div>
             <div class="input-group">
                 <span>出生年月日</span>
                 <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="請輸入出生年月日"
-                    value="1990-01-01">
+                    value="1999-10-10">
             </div>
             <div class="text-center">
-                <button type="button" class="btn-main" onclick="checkin();">報到</button>
+                <button type="button" class="btn-main" onclick="query();">查詢未報到</button>
             </div>
         </div>
+
+        <hr/>
+            <div class="mt-15">
+                <div style="overflow-x: auto;">
+                    <table class="table table-bordered" style="min-width: 700px;">
+                        <thead>
+                            <tr>
+                                <th>時間</th>
+                                <th>醫師</th>
+                                <th>狀態</th>
+                                <th>報到</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                </div>
+            </div>
     </div>
 
     <script src="/js/api.js"></script>
+    <script src="/js/common.js"></script>
     <script>
-        const checkin = async () => {
+       const patientMaster = getPatient();
+        document.addEventListener('DOMContentLoaded', () => {
+            const login = checkLogin();
+            
+            checkcreate();
+            if (login && patientMaster) {
+                setPatient();
+            }
+        });
+
+        const setPatient = () => {
+            document.getElementById('patient-name').innerText = '您好，' + patientMaster.name;
+        }
+
+        const query = async () => {
             const identifier = document.getElementById('identifier').value;
             const birthdate = document.getElementById('birthdate').value;
-
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = "";
             if (identifier == '' || birthdate == '') {
-                alert('請輸入身分證字號及出生年月日');
+                alert('請輸入email及出生年月日');
                 return;
             }
 
             const response = await getPatientByIdentifierAndBirth(identifier, birthdate);
             if (!response.success || !response.data) {
-                alert("查不到您的資料，請確認身分證字號及出生年月日是否正確");
+                alert("查不到您的資料，請確認email及出生年月日是否正確");
+                return;
+            }
+
+            const patient = response.data;
+            const response2 = await getEncountersByPatient(patient.id);
+            if (!response2.success) {
+                alert("查詢掛號紀錄時發生錯誤，請稍後再試");
+                return;
+            }
+
+            const encounters = response2.data;
+            
+            if (encounters.length == 0) {
+                alert("無掛號紀錄");
+                return;
+            }
+
+            let uncheckin = encounters.filter(item => item.status == 'unknown');
+            if (uncheckin.length == 0) {
+                alert("您已報到");
+                return;
+            }
+
+           
+            let html = '';
+ 
+           //console.log(uncheckin);
+           if (Array.isArray(uncheckin)){
+            for (let i in uncheckin) {
+                let data = uncheckin[i];
+                let doctor =  await getPractitionerByEncounter(data.reference);
+                html += `
+                    <tr>
+                        <td>${data.book}</td>
+                        <td>`+doctor+`</td>
+                        <td>${data.status}</td>
+                        <td><button class="btn-main small ml-8" onclick="checkin2(${data.id})">報到</button></td>
+                        
+                    </tr>
+                `;
+            }
+            
+           }else{
+            let doctor = await getPractitionerByEncounter(uncheckin.reference);
+          // console.log("doctor"+doctor);
+            html += `
+                    <tr>
+                        <td>${uncheckin.book}</td>
+                        <td>`+doctor+`</td>
+                        <td>${uncheckin.status}</td>
+                        <td><button class="btn-main small ml-8" onclick="checkin2(${uncheckin.id})">報到</button></td>
+                    </tr>
+                `;
+           }
+            //alert(html);
+            tbody.innerHTML = html;
+
+           
+        }
+
+        
+
+        const checkin2 = async (id) =>{
+            let error = false;
+            const unknown = await getEncounterDataByPatientAndStatus("unknown", patientMaster.id).then((response) => {
+                 return response.success ? response.data : [];
+            });
+            console.log(unknown);
+
+            if (unknown.length == 0) {
+                alert("無掛號紀錄");
+                return;
+            }
+
+            for (let i in unknown) {
+                let encounter = unknown[i];
+                let response = await updateEncounterStatus(id, 'planned');
+                if (!response.success) {
+                    error = true;
+                }
+            }
+
+            if (error) {
+                alert("報到時發生錯誤，請稍後再試");
+                return;
+            }
+            alert("報到成功");
+            query();
+        }
+        const checkin = async () => {
+            const identifier = document.getElementById('identifier').value;
+            const birthdate = document.getElementById('birthdate').value;
+
+            if (identifier == '' || birthdate == '') {
+                alert('請輸入email及出生年月日');
+                return;
+            }
+
+            const response = await getPatientByIdentifierAndBirth(identifier, birthdate);
+            if (!response.success || !response.data) {
+                alert("查不到您的資料，請確認email及出生年月日是否正確");
                 return;
             }
 

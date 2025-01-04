@@ -1,6 +1,7 @@
 const checkLogin = () => {
     const id = localStorage.getItem('login-id');
     const role = localStorage.getItem('login-role');
+ 
     let needLogin = false;
     try {
         if (role === "patient") {
@@ -34,7 +35,13 @@ const checkLogin = () => {
 const logout = () => {
     let loginUrl = "/login.html";
     if (localStorage.getItem('login-role') === "patient") {
-        loginUrl = "/patient-login.html";
+        loginUrl = "/PatientLogin.html";
+    }
+    if (localStorage.getItem('login-role') === "practitioner") {
+        loginUrl = "/PractitionerLogin.html";
+    }
+    if (localStorage.getItem('login-role') === "person") {
+        loginUrl = "/Person-deny.html";
     }
     localStorage.removeItem('login-id');
     localStorage.removeItem('login-role');
@@ -42,7 +49,18 @@ const logout = () => {
     localStorage.removeItem('practitioner');
     localStorage.removeItem('token');
     localStorage.removeItem('person');
+    localStorage.removeItem('patient');
     window.location.href = loginUrl;
+}
+
+const checkcreate = () => {
+    const fhirrole = localStorage.getItem('fhir-patient1');
+    console.log('fhirrole '+fhirrole);
+    if (fhirrole=='0'){
+        window.location.href = '/patient-createFHIR.html';
+    }
+    
+    return true;
 }
 
 const getPractioner = () => {
@@ -75,3 +93,22 @@ const getUrlParam = (name) => {
     if (r != null) return unescape(r[2]);
     return null;
 }
+
+const toLocalISOString= (date) => {
+    const localDate = new Date(date - date.getTimezoneOffset() * 60000); //offset in milliseconds. Credit https://stackoverflow.com/questions/10830357/javascript-toisostring-ignores-timezone-offset
+   
+    // Optionally remove second/millisecond if needed
+    localDate.setSeconds(null);
+    localDate.setMilliseconds(null);
+    return localDate.toISOString().slice(0, -1);
+  }
+
+  const toLocalDateString= (date) => {
+    const localDate = new Date(date - date.getTimezoneOffset() * 60000); //offset in milliseconds. Credit https://stackoverflow.com/questions/10830357/javascript-toisostring-ignores-timezone-offset
+   
+    // Optionally remove second/millisecond if needed
+    localDate.setSeconds(null);
+    localDate.setMilliseconds(null);
+    //console.log(localDate + ' : ' +localDate.toLocaleDateString());
+    return localDate.toLocaleDateString();
+  }

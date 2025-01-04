@@ -59,7 +59,7 @@
         <div class="container-header">
             <div class="header-left">
                 
-                <div class="title">教案儲存管理-觀察資訊(Observation)</div>
+                <div class="title">醫務人員-觀察資訊(Observation)</div>
             </div>
             <div class="header-right">
                 <li>
@@ -87,6 +87,7 @@
                 <div class="flex justify-between">
 
                     <div id="encounter-id" class="">
+                        <input id="patient" list="patientlst"/>
                         <input id="query-id" type="text" class="form-control"
                             placeholder="輸入code" style="width: 100%;" value="Camera or image.finding">
                     </div>
@@ -108,16 +109,20 @@
             <hr/>
             <div class="mt-15">
                 <div style="overflow-x: auto;">
+                    <form method="GET" name = "myform" action="https://dd1004.github.io/observation.html" target="_blank">
+                        <input type="hidden" name="token" id="mytoken">
                     <table class="table table-bordered" style="min-width: 700px;">
                         <thead>
                             <tr>
                                 <th>記錄人員</th>
                                 <th>狀態</th>
                                 <th>結果</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tbody"></tbody>
                     </table>
+                </form>
                 </div>
             </div>
         </div>
@@ -128,6 +133,9 @@
     <script>
         const person = getPerson();
         const patient = getPatient();
+        let mytoekn = localStorage.getItem('token');
+        document.getElementById("mytoken").value = mytoekn;
+
         document.addEventListener('DOMContentLoaded', () => {
             let mytoekn =   getQueryString()["token"];
             if (mytoekn !=null){
@@ -225,6 +233,7 @@
                         <td>${data.resource.performer[0].reference}</td>
                         <td>${data.resource.status}</td>
                         <td>${data.resource.component[0].code.coding[0].display}</td>
+                        <td><input type="submit" value="click" /></td>
                         
                     </tr>
                 `;
@@ -235,6 +244,7 @@
                         <td>${data.resource.performer[0].reference}</td>
                         <td>${data.resource.status}</td>
                         <td>${data.resource.component[0].code.coding[0].display}</td>
+                        <td><input type="submit" value="click" /></td>
                     </tr>
                 `;
            }
@@ -282,6 +292,32 @@
             }
 
 
+        }
+
+        const fillDataList= async () => {
+            let response = await getFHIRResource("Patient");
+            var container = document.getElementById('patient'),
+            i = 0,
+            len = optionList.length,
+            dl = document.createElement('datalist');
+
+            dl.id = 'patientlst';
+            if (Array.isArray(datas)){
+            datas.forEach((data) => {
+                var option = document.createElement('option');
+               option.value = data.resource.id;
+               option.text = data.resource.name[0].text;
+               dl.appendChild(option);
+                
+            });
+           }else{
+            var option = document.createElement('option');
+               option.value = datas.resource.id;
+               option.text = datas.resource.name[0].text;
+               dl.appendChild(option);
+
+           }
+            container.appendChild(dl);
         }
     </script>
 </body>
