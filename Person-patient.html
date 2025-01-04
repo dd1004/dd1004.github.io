@@ -119,7 +119,7 @@
                 </div>
             </div>
             <div class="mt-10 text-center">
-                <button class="btn-main" onclick="createPatient();">註冊</button>
+                <button class="btn-main" onclick="createPersonPatient();">註冊</button>
             </div>
             
         </div>
@@ -162,7 +162,7 @@
             }
         });
       
-        const createPatient = async () => {
+        const createPersonPatient = async () => {
             let name = document.getElementById('input-name').value;
             if (!name) {
                 alert('請輸入姓名');
