@@ -15,7 +15,7 @@ const API_UP_HEADERS = {
 
 
 let personJSONobj = {
-		"resourceType": "Person",s
+		"resourceType": "Person",
 		"active": "true",
 		"identifier": [ 
 			{
