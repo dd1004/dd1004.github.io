@@ -119,7 +119,7 @@
                 </div>
             </div>
             <div class="mt-10 text-center">
-                <button class="btn-main" onclick="createPerson();">註冊</button>
+                <button class="btn-main" onclick="createPatient();">註冊</button>
             </div>
             
         </div>
@@ -162,7 +162,7 @@
             }
         });
       
-        const createPerson = async () => {
+        const createPatient = async () => {
             let name = document.getElementById('input-name').value;
             if (!name) {
                 alert('請輸入姓名');
@@ -222,13 +222,13 @@
             //registerObj.Person = personJSONobj;
             registerObj.Patient = patientJSONobj;
              
-            let response = await createPatient(registerObj);
+            let response = await createFHIRResource('/Patient',patientJSONobj);
             if (!response.success) {
-                alert(response.msg ? response.msg : '註冊失敗');
+                alert(response.msg ? response.msg : '新增失敗');
                 return;
             }else{
                 console.log(response);
-                alert('註冊成功, 將返回登入頁面, 請重新登入');
+                alert('新增成功');
             }
             search();
         }
