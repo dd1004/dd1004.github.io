@@ -197,7 +197,8 @@
             personJSONobj.gender = gender;
             personJSONobj.telecom[0].value = email;
 
-            
+            let newuuid = await myuuid();
+            patientJSONobj.id = newuuid;
             patientJSONobj.identifier[0].value= email;
             patientJSONobj.identifier[1].value='';
             patientJSONobj.identifier[2].value= person.id;
@@ -209,7 +210,7 @@
 
             //registerObj.Person = personJSONobj;
             registerObj.Patient = patientJSONobj;
-             let newuuid = await myuuid();
+            
             let response = await createPatientAndID(patientJSONobj,newuuid);
             if (!response.success) {
                 alert(response.msg ? response.msg : '新增失敗');
