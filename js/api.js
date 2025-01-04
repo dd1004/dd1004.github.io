@@ -690,7 +690,7 @@ const createPatientAndID = async (data,id) => {
 
     const url = `${FHIR_BASE}/Patient/${id}`;
 API_HEADERS.Authorization = localStorage.getItem('token');
-const response = await usePut(url, API_HEADERS, JSON.stringify(encounter));
+const response = await usePut(url, API_HEADERS, JSON.stringify(data));
     if (response.data !=undefined){
         return {
             success: false,
