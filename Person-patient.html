@@ -126,7 +126,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>姓名</th>
-                                <th></th>
+                                <th>性別</th>
                             </tr>
                         </thead>
                         <tbody id="tbody"></tbody>
@@ -262,6 +262,7 @@
                     <tr>
                         <td>${data.resource.id}</td>
                         <td>${data.resource.name[0].text}</td>
+                        <td>${data.resource.gender}</td>
                         
                     </tr>
                 `;
@@ -271,6 +272,7 @@
                     <tr>
                          <td>${datas.entry[0].resource.id}</td>
                         <td>${datas.entry[0].resource.name[0].text}</td>
+                        <td>${datas.entry[0].resource.gender}</td>
                     </tr>
                 `;
            }
