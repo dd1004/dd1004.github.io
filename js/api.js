@@ -685,6 +685,30 @@ const createPatient = async (data) => {
     
 }
 
+const createPatientAndID = async (data,id) => {
+    
+
+    const url = `${FHIR_BASE}/Patient/${id}`;
+API_HEADERS.Authorization = localStorage.getItem('token');
+const response = await usePut(url, API_HEADERS, JSON.stringify(encounter));
+    if (response.data !=undefined){
+        return {
+            success: false,
+            msg: "新增失敗" + response.msg,
+            data: response
+        };
+    }else{
+        const success = response ? response.data && response.data.length > 0 && response.data.code === "200" ? false : true : false;
+        return {
+            success: success,
+            msg: success ? "新增成功" : "新增失敗",
+            data: response
+        };
+    }
+    
+}
+
+
 const createFHIRPatient = async (data) => {
     
 
@@ -1015,7 +1039,7 @@ const uploadFileToStorage = async (file) => {
     };
 }
 
-const myuuid = async (file) => {
+const myuuid = async () => {
     var d = Date.now();
     if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
       d += performance.now(); //use high-precision timer if available
