@@ -27,11 +27,11 @@ let personJSONobj = {
 				"value": ""
 			},
 			{
-				"system": "entrypersonid",
+				"system": "jobPosition",
 				"value": ""
 			},
 			{
-				"system": "entrypersonname",
+				"system": "institution",
 				"value": ""
 			},
 			{
@@ -107,11 +107,11 @@ let personJSONobj = {
 				"value": ""
 			},
 			{
-				"system": "jobPosition",
+				"system": "man",
 				"value": ""
 			},
 			{
-				"system": "institution",
+				"system": "name",
 				"value": ""
 			},
 			{
