@@ -209,8 +209,8 @@
 
             //registerObj.Person = personJSONobj;
             registerObj.Patient = patientJSONobj;
-             
-            let response = await createPatientAndID(patientJSONobj,myuuid());
+             let newuuid = await myuuid();
+            let response = await createPatientAndID(patientJSONobj,newuuid);
             if (!response.success) {
                 alert(response.msg ? response.msg : '新增失敗');
                 return;
