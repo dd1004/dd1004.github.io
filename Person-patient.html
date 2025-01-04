@@ -264,8 +264,8 @@
                 `;
             });
             */
-           console.log(datas);
-           if (Array.isArray(datas)){
+           if (datas.total>0){
+            if (Array.isArray(datas)){
             datas.forEach((data) => {
                 let status = data.status;
                 html += `
@@ -287,6 +287,8 @@
             //alert(html);
             tbody.innerHTML = html;
         }
+           }
+           
 
         const getQueryString= () => {
             var result = {}, queryString = location.search.slice(1),
