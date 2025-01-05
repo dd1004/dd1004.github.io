@@ -145,9 +145,12 @@
             patientid =   getQueryString()["patient"];
             patientname =   getQueryString()["name"];
             const login = checkLogin();
-            if (login && patientid!=undefined){
+            if (login ){
+                if (patientid=undefined){
+                    window.location.href = 'Person-patient.html';
+                }
                 document.getElementById('patient-name').innerText = patientname;
-                query();
+                    query();
             }else{
                 window.location.href = 'Person-deny.html';
             }
