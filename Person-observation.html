@@ -282,7 +282,7 @@
         const query= async () => {
             
                 let response = await getFHIRResource("Observation?subject="+patientid);
-                console.log(response.data);
+                console.log(response);
                 let datas =response.data ;
                 console.log(datas);
                 if (Array.isArray(response.data)){
