@@ -166,7 +166,7 @@
         let patientid = '';
         let patientname = '';
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById("entrydate").value = toLocalDateString(new Date());
+            document.getElementById("entrydate").value = toLocalISOString(new Date());
             patientid =   getQueryString()["patient"];
             patientname =   getQueryString()["name"];
             const login = checkLogin();
