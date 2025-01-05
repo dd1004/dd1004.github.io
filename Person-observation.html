@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 
@@ -165,22 +166,13 @@
     <script src="/js/api.js"></script>
     <script src="/js/common.js"></script>
     <script>
-               const patientMaster = getPatient();
-               let mytoekn = localStorage.getItem('token');
-               document.getElementById("mytoken").value = mytoekn;
+        const patientMaster = getPatient();
+        let mytoekn = localStorage.getItem('token');
+        document.getElementById("mytoken").value = mytoekn;
         document.addEventListener('DOMContentLoaded', () => {
-           
-            document.getElementById("entrydate").value = toLocalDateString(new Date());
-            document.getElementById('unit').textContent  = '';
-            let mytoekn =   getQueryString()["token"];
-            let id =   getQueryString()["id"];
-            if (mytoekn !=null){
-                localStorage.setItem('persontoken',mytoekn);
-                localStorage.setItem('personid',id);
-               // alert(mytoekn);
- 
-                document.getElementById('patient-name').innerText = '您好，';
-                getData();
+            const login = checkLogin();
+            if (login){
+
             }else{
                 window.location.href = 'Person-deny.html';
             }
