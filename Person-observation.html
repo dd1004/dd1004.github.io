@@ -314,7 +314,7 @@
             });
             */
             console.log(datas);
-            if (datas.total>0){
+           
            if (Array.isArray(datas)){
             datas.forEach((data) => {
                 let status = data.status;
@@ -330,15 +330,15 @@
            }else{
             html += `
                     <tr>
-                        <td>${datas.entry[0].resource.effectiveDateTime}</td>
-                        <td>${datas.entry[0].resource.code.text}</td>
-                        <td>${datas.entry[0].resource.valueQuantity.valuey}</td>
+                        <td>${datas.resource.effectiveDateTime}</td>
+                        <td>${datas.resource.code.text}</td>
+                        <td>${datas.resource.valueQuantity.valuey}</td>
                     </tr>
                 `;
            }
             //alert(html);
             tbody.innerHTML = html;
-            }
+            
         }
 
         
