@@ -235,7 +235,7 @@
             }
 
             observationobj.subject.reference="Patient/"+patientid;
-            observationobj.performer.reference="Patient/"+patientid;
+            observationobj.performer[0].reference="Patient/"+patientid;
             observationobj.effectiveDateTime = entrydate;
             observationobj.valueQuantity.value = value;
             if(loniccode=='8480-6'){
