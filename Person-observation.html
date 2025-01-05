@@ -114,30 +114,8 @@
             </div>
 
             <hr/>
-        </div>
-        <hr />
-        <div class="mt-15">
-            <div class="card">
-                <div class="flex justify-between">
+        </div>ass="container-main">
 
-                    <div id="encounter-id" class="">
-                        <input id="query-id" type="text" class="form-control"
-                            placeholder="輸入code" style="width: 100%;" value="Camera or image.finding">
-                    </div>
-                    <hr />  
-
-                    <div id="encounter-query" class=" ">
-                    <button class="btn-main" onclick="query();">查詢</button>
-                </div>
-                </div>
-            </div>
-        </div>
-        <hr/>
-        <div class="container-main">
-            <div class="flex">
-                <div>帳號：<span id="docker-name"></span></div>
-                <div class="ml-30">編號：<span id="docker-id"></span></div>
-            </div>
            
             <hr/>
             <div class="mt-15">
@@ -275,11 +253,24 @@
             }else{
                 console.log(response);
                 alert('資料上傳成功');
-                query();
+                requery();
             }
 
        }
-
+       const requery= async () => {
+            
+            let response = await getFHIRResource("Observation?subject="+patientid);
+            if (response.data!=null){
+                let datas =response.data ;
+            if (Array.isArray(response.data)){
+               datas.sort((a, b) => {
+                    return b.id - a.id;
+               });
+            }
+            setData(datas);
+            }
+            
+        }
         const query= async () => {
             
                 let response = await getFHIRResource("Observation?subject="+patientid);
