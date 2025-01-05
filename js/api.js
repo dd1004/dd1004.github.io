@@ -787,7 +787,7 @@ const createFHIRResource = async (myresource, data) => {
     const url = `${FHIR_BASE}/${myresource}`;
     API_HEADERS.Authorization = localStorage.getItem('token');
     const response = await usePost(url, API_HEADERS, JSON.stringify(data));
-    console.log('createFHIRResource  == '+response);
+    console.log('createFHIRResource  == '+JSON.stringify(response));
     const success = response ? response.issue==undefined?false: response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
     return {
         success: success,
