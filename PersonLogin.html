@@ -55,7 +55,7 @@
                 //const practitioner = JSON.parse(localStorage.getItem('person'));
                // const role = localStorage.getItem('login-role');
                // if (id && practitioner && role == 'patient') {
-                    window.location.href = '/patient-reports.html';
+                   // window.location.href = '/patient-reports.html';
                // }
             } catch (e) { }
         });
@@ -100,7 +100,7 @@
            // localStorage.setItem('login-id', person.id);
 
             alert('登入成功！');
-            window.location.href = '${FHIR_APP}/Person-redirect.html?token='+response.jwt+'&id='+person.id+'&name='+person.name;
+            window.location.href = FHIR_APP+'Person-redirect.html?token='+response.jwt+'&id='+person.id+'&name='+person.name;
         }
     </script>
 </body>
