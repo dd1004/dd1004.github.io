@@ -780,7 +780,7 @@ const createPersonAndPractitioner = async (data) => {
     }
     
 }
-
+//https://fhir.tcumi.com:52443/hapi66/fhir/Observation 回傳Observation 的json, 根本沒有issue, 所以一定會成立issue==undefined, 之前不知道執行哪一段讓我寫加入這段code的判斷
 const createFHIRResource = async (myresource, data) => {
     
 
@@ -790,7 +790,7 @@ const createFHIRResource = async (myresource, data) => {
     console.log('createFHIRResource1  == '+JSON.stringify(response));
     console.log('createFHIRResource2  == '+response.issue);
     console.log('createFHIRResource3  == '+response.issue.length);
-    const success = response ? response.issue==undefined?false: response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
+    const success = response ? response.issue && response.issue.length > 0 && response.issue[0].severity === "error" ? false : true : false;
     return {
         success: success,
         msg: success ? "資料新增成功" : "資料新增失敗",
