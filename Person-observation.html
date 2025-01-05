@@ -62,7 +62,7 @@
                 <a href="/patient-login.html">
                     <img src="/img/logo.png" alt="logo" class="logo">
                 </a>
-                <div class="title">Patient System-Reports</div>
+                <div class="title">FHIR Repository-上傳Patient</div>
             </div>
             <div class="header-right">
                 <li>
@@ -145,7 +145,7 @@
             patientid =   getQueryString()["patient"];
             patientname =   getQueryString()["name"];
             const login = checkLogin();
-            if (login){
+            if (login && patientid!=undefined){
                 document.getElementById('patient-name').innerText = patientname;
                 query();
             }else{
