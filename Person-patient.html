@@ -262,7 +262,7 @@
                 let status = data.status;
                 html += `
                     <tr>
-                        <td>${data.resource.id}</td>
+                        <td><a href=Person-observation.html?patient=${data.resource.id}&name=${data.resource.name[0].text}>${data.resource.id}</a></td>
                         <td>${data.resource.name[0].text}</td>
                         <td>${data.resource.gender}</td>
                         
@@ -272,7 +272,7 @@
            }else{
             html += `
                     <tr>
-                         <td>${datas.entry[0].resource.id}</td>
+                         <td><a href=Person-observation.html?patient=${datas.entry[0].resource.id}&name=${datas.entry[0].resource.name[0].text}>${datas.entry[0].resource.id}</a></td>
                         <td>${datas.entry[0].resource.name[0].text}</td>
                         <td>${datas.entry[0].resource.gender}</td>
                     </tr>
