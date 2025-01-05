@@ -165,9 +165,10 @@
     <script src="/js/common.js"></script>
     <script>
         const patientMaster = getPatient();
+        document.addEventListener('DOMContentLoaded', () => {
+            
         let patientid =   getQueryString()["patient"];
         let patientname =   getQueryString()["name"];
-        document.addEventListener('DOMContentLoaded', () => {
             const login = checkLogin();
             if (login){
                 document.getElementById('patient-name').innerText = patientname;
