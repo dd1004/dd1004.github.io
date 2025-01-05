@@ -327,9 +327,9 @@
            }else{
             html += `
                     <tr>
-                        <td>${data.resource.effectiveDateTime}</td>
-                        <td>${data.resource.code.text}</td>
-                        <td>${data.resource.valueQuantity.valuey}</td>
+                        <td>${datas.entry[0].resource.effectiveDateTime}</td>
+                        <td>${datas.entry[0].resource.code.text}</td>
+                        <td>${datas.entry[0].resource.valueQuantity.valuey}</td>
                     </tr>
                 `;
            }
