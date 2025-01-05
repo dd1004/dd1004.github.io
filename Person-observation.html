@@ -163,11 +163,12 @@
     <script src="/js/api.js"></script>
     <script src="/js/common.js"></script>
     <script>
-        const patientMaster = getPatient();
+        let patientid = '';
+        let patientname = '';
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById("entrydate").value = toLocalDateString(new Date());
-            let patientid =   getQueryString()["patient"];
-            let patientname =   getQueryString()["name"];
+            patientid =   getQueryString()["patient"];
+            patientname =   getQueryString()["name"];
             const login = checkLogin();
             if (login){
                 document.getElementById('patient-name').innerText = patientname;
