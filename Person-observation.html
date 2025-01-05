@@ -86,7 +86,7 @@
         <h1 class="mt-20 text-center">上傳<span id="patient-name"></span>監測資料</h1>
         <div class="card">
             <div class="input-group">
-                <span>監測累別</span>
+                <span>監測類別</span>
                 <select id="loniccode" onchange="changeunit()">
                     <option value=""></option>
                     <option value="8480-6">血壓(收縮壓) Blood Pressure</option>
@@ -166,9 +166,9 @@
     <script>
         const patientMaster = getPatient();
         document.addEventListener('DOMContentLoaded', () => {
-            
-        let patientid =   getQueryString()["patient"];
-        let patientname =   getQueryString()["name"];
+            document.getElementById("entrydate").value = toLocalDateString(new Date());
+            let patientid =   getQueryString()["patient"];
+            let patientname =   getQueryString()["name"];
             const login = checkLogin();
             if (login){
                 document.getElementById('patient-name').innerText = patientname;
