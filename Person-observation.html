@@ -147,10 +147,9 @@
                     <table class="table table-bordered" style="min-width: 700px;">
                         <thead>
                             <tr>
-                                <th>記錄人員</th>
-                                <th>狀態</th>
+                                <th>時間</th>
+                                <th>監測項目</th>
                                 <th>結果</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tbody"></tbody>
@@ -172,6 +171,7 @@
             const login = checkLogin();
             if (login){
                 document.getElementById('patient-name').innerText = patientname;
+                query();
             }else{
                 window.location.href = 'Person-deny.html';
             }
@@ -217,30 +217,71 @@
 
 
        const upload = async () => {
-        let name = document.getElementById('loniccode').value;
-            if (!name) {
+        let loniccode = document.getElementById('loniccode').value;
+            if (!loniccode) {
                 alert('請輸入監測項目');
                 return;
             }
-            let birthday = document.getElementById('birthdate').value;
-            if (!birthday) {
-                alert('請輸入出生牛月日');
+            let entrydate = document.getElementById('entrydate').value;
+            if (!entrydate) {
+                alert('請輸入監測日期');
                 return;
             }
-            let email = document.getElementById('input-email').value;
-            if (!email) {
-                alert('請輸入email');
+            let value = document.getElementById('value').value;
+            if (!value) {
+                alert('請輸入數值');
                 return;
-            }0
+            }
+
+            observationobj.subject.reference="Patient/"+patientid;
+            observationobj.performer.reference="Patient/"+patientid;
+            observationobj.effectiveDateTime = entrydate;
+            observationobj.valueQuantity.value = value;
+            if(loniccode=='8480-6'){
+                observationobj.valueQuantity.unit ='mmHg';
+                observationobj.valueQuantity.code ='mm[Hg]';
+            }else if(loniccode=='8302-2'){
+                observationobj.valueQuantity.unit ='cm';
+                observationobj.valueQuantity.code ='cm';
+                observationobj.code.coding[0].code ='8302-2';
+                observationobj.code.coding[0].display ='Body height';
+                observationobj.code.text ='Body height';
+            }else if(loniccode=='29463-7'){
+                observationobj.valueQuantity.unit ='kg';
+                observationobj.valueQuantity.code ='kg';
+                observationobj.code.coding[0].code ='29463-7';
+                observationobj.code.coding[0].display ='Body weight';
+                observationobj.code.text ='Body weight';
+            }else if(loniccode=='8310-5'){
+                observationobj.valueQuantity.unit ='Cel';
+                observationobj.valueQuantity.code ='Cel';
+                observationobj.code.coding[0].code ='8310-5';
+                observationobj.code.coding[0].display ='Body temperature';
+                observationobj.code.text ='Body temperature';
+            }else if(loniccode=='8867-4'){
+                observationobj.valueQuantity.unit ='beats/min';
+                observationobj.valueQuantity.code ='/min';
+                observationobj.code.coding[0].code ='8867-4';
+                observationobj.code.coding[0].display ='Heart rate';
+                observationobj.code.text ='Heart rate';
+            }
+
+            let response = await createFHIRResource("Observation", observationobj);
+            if (!response.success) {
+                alert(response.msg ? response.msg : '資料上傳失敗');
+                return;
+            }else{
+                console.log(response);
+                alert('資料上傳成功');
+                query();
+            }
+
        }
 
         const query= async () => {
-            let querycondition = document.getElementById('query-id').value;
-            if (!querycondition) {
-                getData();
-            }else{
-                let response = await getFHIRResource("Observation?code="+querycondition);
-                console.log(response);
+            
+                let response = await getFHIRResource("Observation?subject="+patientid);
+                
                 let datas =response.data ;
                 if (Array.isArray(response.data)){
                    datas.sort((a, b) => {
@@ -250,20 +291,8 @@
                 setData(datas);
             }
            
-        }
-
-        const getData = async () => {
-            let response = await getFHIRResource("Observation");
-            //console.log(response.success); 2024/11/20 always return false on github.io
-            //let datas = response.success ? response.data : [];
-            let datas = response.data ;
-            if (Array.isArray(response.data)){
-                datas.sort((a, b) => {
-                return a.id - b.id;
-            });
-        }
-            setData(datas);
-        }
+        
+       
 
         const setData = (datas) => {
             const tbody = document.getElementById('tbody');
@@ -287,10 +316,9 @@
                 let status = data.status;
                 html += `
                     <tr>
-                        <td>${data.resource.performer[0].reference}</td>
-                        <td>${data.resource.status}</td>
-                        <td>${data.resource.component[0].code.coding[0].display}</td>
-                        <td><input type="submit" value="click" /></td>
+                        <td>${data.resource.effectiveDateTime}</td>
+                        <td>${data.resource.code.text}</td>
+                        <td>${data.resource.valueQuantity.value}</td>
                         
                     </tr>
                 `;
@@ -298,10 +326,9 @@
            }else{
             html += `
                     <tr>
-                        <td>${data.resource.performer[0].reference}</td>
-                        <td>${data.resource.status}</td>
-                        <td>${data.resource.component[0].code.coding[0].display}</td>
-                        <td><input type="submit" value="click" /></td>
+                        <td>${data.resource.effectiveDateTime}</td>
+                        <td>${data.resource.code.text}</td>
+                        <td>${data.resource.valueQuantity.valuey}</td>
                     </tr>
                 `;
            }
@@ -309,47 +336,7 @@
             tbody.innerHTML = html;
         }
 
-        const createOrg = async () => {
-            let name = document.getElementById('input-orgname').value;
-            if (!name) {
-                alert('請輸入組織名稱');
-                return;
-            }
-            
-            let response1 = await getOrganizationByName(name);
-            if (response1.success) {
-                alert("組織已存在");
-                return;
-            }
-            orgJSONobj.name = name;
-             
-            let response = await createOrganization(orgJSONobj);
-            if (!response.success) {
-                alert(response.msg ? response.msg : '上傳時發生錯誤');
-                return;
-            }
-            getData();
-        }
-
-        const search = async () => {
-            const name = document.getElementById('input-orgname').value;
-            if (!name) {
-                alert('請輸入組織名稱');
-                return;
-            }
-
-            let response = await getOrganizationByName(name);
-            if (!response.success) {
-                alert("找不到組織名稱");
-                return;
-            }else{
-                alert("組織已存在");
-
-                return;
-            }
-
-
-        }
+        
     </script>
 </body>
 

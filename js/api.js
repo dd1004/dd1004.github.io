@@ -208,6 +208,9 @@ let personJSONobj = {
         "subject": {
           "reference": "Patient/xxxx"
         },
+        "performer":[{
+            "reference": "Patient/xxxx"
+          }],
         "effectiveDateTime": "2025-01-01",
         "valueQuantity": {
           "value": 120,
